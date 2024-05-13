@@ -1,45 +1,28 @@
 import os
-
 import cv2
-
-
-DATA_DIR = './data'
-if not os.path.exists(DATA_DIR):
-    os.makedirs(DATA_DIR)
-
-number_of_classes = 3
-dataset_size = 500
-
-cap = cv2.VideoCapture(0)
-for j in range(number_of_classes):
-    if not os.path.exists(os.path.join(DATA_DIR, str(j))):
-        os.makedirs(os.path.join(DATA_DIR, str(j)))
-
-    print('Collecting data for class {}'.format(j))
-
-    done = False
-    while True:
-        ret, frame = cap.read()
-        if ret:
-            cv2.putText(frame, 'Ready? Press "Q" ! :)', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
-                        cv2.LINE_AA)
-            cv2.imshow('frame', frame)
-            if cv2.waitKey(25) == ord('q'):
-                break
-        else:
+sijainti = './data' #pathin asetus eli mihin tiedosto menee
+if not os.path.exists(sijainti): #tarkistaa onko tiedostoa, jos ei ole luo sen.
+    os.makedirs(sijainti)
+luokat = 3  #asetetaan käsi merkkien määrä
+kuvaloppu = 3 #asettaan haluttu määrä kuvia
+kamera = cv2.VideoCapture(0) # asettaa integroidun kuvausta varten
+for j in range(luokat):    #Looppaa käsimerkkien verran
+    if not os.path.exists(os.path.join(sijainti, str(j))): #luo kansiot käsi merkeille
+        os.makedirs(os.path.join(sijainti, str(j)))
+    print('kerätään dataa merkille {}'.format(j)) #ilmoittaa mielle merkille otetaan kuvia
+    while True: 
+        ret, frame = kamera.read() #lukee kameraa
+        cv2.putText(frame, 'Oletko valmis? Paina "E" ! :)', (100, 50), cv2.FONT_HERSHEY_SIMPLEX, 1.3, (0, 255, 0), 3,
+        cv2.LINE_AA) #kysyy oletko valmis ruudulla
+        cv2.imshow('frame', frame) 
+        if cv2.waitKey(25) == ord('e'): #aloittaa kuvauksen
             break
-
-    counter = 0
-    while counter < dataset_size:
-        ret, frame = cap.read()
-        if ret:
-            cv2.imshow('frame', frame)
-            cv2.waitKey(25)
-            cv2.imwrite(os.path.join(DATA_DIR, str(j), '{}.jpg'.format(counter)), frame)
-        else:
-            break
-
-        counter += 1
-
-cap.release()
-cv2.destroyAllWindows()
+    kuva_alku = 0
+    while kuva_alku < kuvaloppu: #ottaa kuvat ja lisää kuvat oikeaan kansioon
+        ret, frame = kamera.read()
+        cv2.imshow('frame', frame)
+        cv2.waitKey(25)
+        cv2.imwrite(os.path.join(sijainti, str(j), '{}.jpg'.format(kuva_alku)), frame)
+        kuva_alku += 1
+kamera.release()#kameran käytön
+cv2.destroyAllWindows() #lopettaa koodin
