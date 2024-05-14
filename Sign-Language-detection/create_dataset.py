@@ -17,10 +17,10 @@ labels = []
 for kansio in os.listdir(sijainti):
     for img_path in os.listdir(os.path.join(sijainti, kansio)):
         data_aux = []
-        img = cv2.imread(os.path.join(sijainti, kansio, img_path))
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        kuva = cv2.imread(os.path.join(sijainti, kansio, img_path))
+        kuva_rgb = cv2.cvtColor(kuva, cv2.COLOR_BGR2RGB)
 
-        tulokset = kädet.process(img_rgb)
+        tulokset = kädet.process(kuva_rgb)
         if tulokset.multi_hand_landmarks:
             for hand_landmarks in tulokset.multi_hand_landmarks:
                 for i in range(len(hand_landmarks.landmark)):

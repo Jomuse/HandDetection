@@ -12,16 +12,16 @@ labels = np.asarray(data_dict['labels'])
 
 x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, shuffle=True, stratify=labels)
 
-model = RandomForestClassifier()
+malli = RandomForestClassifier()
 
-model.fit(x_train, y_train)
+malli.fit(x_train, y_train)
 
-y_predict = model.predict(x_test)
+y_ennuste = malli.predict(x_test)
 
-score = accuracy_score(y_predict, y_test)
+tarkkuus = accuracy_score(y_ennuste, y_test)
 
-print('{}% of samples were classified correctly !'.format(score * 100))
+print('{}% näytteistä luokiteltiin oikein !'.format(tarkkuus * 100))
 
 f = open('model.p', 'wb')
-pickle.dump({'model': model}, f)
+pickle.dump({'model': malli}, f)
 f.close()
