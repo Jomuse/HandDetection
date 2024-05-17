@@ -3,35 +3,30 @@ import mediapipe as mp
 import cv2
 import pickle
 
-mp_hands = mp.solutions.hands
-mp_drawing = mp.solutions.drawing_utils
-mp_drawing_styles = mp.solutions.drawing_styles
-
-hands = mp_hands.Hands(static_image_mode=True, min_detection_confidence=0.3)
-
-DATA_DIR = './data'
-
-
+#MediaPipen käsien tunnistuksen ja piirto-ominaisuuksien avustaminen
+mp_kädet = mp.solutions.hands
+mp_piirto = mp.solutions.drawing_utils
+mp_piirto_tyylit = mp.solutions.drawing_styles
+kädet = mp_kädet.Hands(static_image_mode=True, min_detection_confidence=0.3) #käsien tunnistuksen alustaminen
+sijainti = './data' #kuvakansion sijainti
 data = []
 labels = []
-for dir_ in os.listdir(DATA_DIR):
-    for img_path in os.listdir(os.path.join(DATA_DIR, dir_)):
-        data_aux = []
-        img = cv2.imread(os.path.join(DATA_DIR, dir_, img_path))
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-        results = hands.process(img_rgb)
-        if results.multi_hand_landmarks:
-            for hand_landmarks in results.multi_hand_landmarks:
-                for i in range(len(hand_landmarks.landmark)):
+for kansio in os.listdir(sijainti): #käy kansion tiedostoja 
+    for img_path in os.listdir(os.path.join(sijainti, kansio)):
+        data_aux = [] #apulista käsien koordinaateille
+        kuva = cv2.imread(os.path.join(sijainti, kansio, img_path))
+        kuva_rgb = cv2.cvtColor(kuva, cv2.COLOR_BGR2RGB) #muutetaan kuvat rgb-muotoon mediapipelle
+        tulokset = kädet.process(kuva_rgb) #prosessoi kädet kuvasta landmarkien löytämiseksi
+        if tulokset.multi_hand_landmarks:
+            for hand_landmarks in tulokset.multi_hand_landmarks:
+                for i in range(len(hand_landmarks.landmark)): #landmarkien lisäys listaan
                     x = hand_landmarks.landmark[i].x
                     y = hand_landmarks.landmark[i].y
                     data_aux.append(x)
                     data_aux.append(y)
-
-            data.append(data_aux)
-            labels.append(dir_)
-
+            data.append(data_aux) #lisätään koordinaatit data-listaan
+            labels.append(kansio)
+#tietojen talletus pickle-tiedostoon
 f = open('data.pickle', 'wb')
 pickle.dump({'data': data, 'labels': labels}, f)
 f.close()
